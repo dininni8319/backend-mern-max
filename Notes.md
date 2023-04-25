@@ -1,7 +1,9 @@
 Packages
 #npm install --save express body-parser
-
 #npm install --save-dev nodemon
+#npm install express-validator
+
+
 
 #To check with process are running on the port 5000
 lsof -i tcp:5000
@@ -16,3 +18,4 @@ sudo pkill node
 npx kill-port 5000
 
 kill $(lsof -t -i:3000)
+
