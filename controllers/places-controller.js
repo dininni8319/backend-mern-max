@@ -2,6 +2,7 @@ const {v4: uuidv4 } = require("uuid");
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 const getCoordsForAddress =require("../utils/location");
+const Place = require("../models/place");
 
 let DUMMY_PLACES = [
   {
@@ -28,16 +29,20 @@ let DUMMY_PLACES = [
   }
 ];
 
-exports.getAllPlaces = (req, res, next) => {
-  const allPlaces = DUMMY_PLACES;
-
-  res.status(200).json({ places: allPlaces})
+exports.getAllPlaces = async (req, res, next) => {
+  try {
+    const allPlaces = await Place.find({}).exec();
+    res.status(200).json({ places: allPlaces})
+    
+  } catch (err) {
+    throw error = new HttpError("Could not find a place for the provided id.", 404);
+  }
 };
 
-exports.getPlaceById = (req, res, next) => {
+exports.getPlaceById = async (req, res, next) => {
   const { pid } = req.params; // { pid: "p1" }
 
-  const place = DUMMY_PLACES.find(place => place.id === pid);
+  const place = await Place.findOne({ _id: pid }).exec();
 
   if (!place) {
     throw error = new HttpError("Could not find a place for the provided id.", 404);
@@ -46,10 +51,10 @@ exports.getPlaceById = (req, res, next) => {
   }
 };
 
-exports.getPlacesByUserId = (req, res, next) => {
+exports.getPlacesByUserId = async (req, res, next) => {
   const { uid } = req.params;
-
-  const userPlace = DUMMY_PLACES.filter(place => place.creator === uid);
+  console.log(uid, "TEST");
+   const userPlace = await Place.find({creator: uid});
 
   if (!userPlace) {
     return next(
@@ -81,17 +86,24 @@ exports.createPlace = async (req, res, next) => {
     return next(error);
   };
 
-  const createPlace = {
-    title, 
+  const createPlace = new Place({
+    title,
     description,
-    location: coordinates,
     address,
-    creator
+    location: coordinates,
+    image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FColosseum&psig=AOvVaw0Tmmcx2DFsQhQnHbT8qViH&ust=1682527459731000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKCEka69xf4CFQAAAAAdAAAAABAE",
+    creator: creator
+  });
+
+  // DUMMY_PLACES.push(createPlace)
+  try {
+    await createPlace.save();
+  } catch (error) {
+    error = new HttpError("Creating place failed, please try again", 500)
+    return next(error);
   }
 
-  DUMMY_PLACES.push(createPlace)
-  
-  res.status(201).json({place: createPlace});
+  res.status(201).json({place: createPlace });
 };
 
 exports.updatePlace = (req, res, next) => {
@@ -118,7 +130,7 @@ exports.updatePlace = (req, res, next) => {
   res.status(200).json({place: updatedPlace});
 };
 
-exports.deletePlace= (req, res, next) => {
+exports.deletePlace = (req, res, next) => {
   
   const { pid } = req.params;
   if(!DUMMY_PLACES.find(place => place.id === pid)) {

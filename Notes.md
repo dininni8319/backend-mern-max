@@ -2,8 +2,7 @@ Packages
 #npm install --save express body-parser
 #npm install --save-dev nodemon
 #npm install express-validator
-
-
+#npm install --save moongose
 
 #To check with process are running on the port 5000
 lsof -i tcp:5000
