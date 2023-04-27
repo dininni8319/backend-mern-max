@@ -27,7 +27,10 @@ const placeSchema = new mongoose.Schema({
       required: true
     }
   },
-  creator: { type: String, required: true}
-});
+  creator: {
+    type: mongoose.Types.ObjectId, 
+    required: true, ref: "User"
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Place", placeSchema);

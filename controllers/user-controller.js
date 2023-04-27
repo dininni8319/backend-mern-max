@@ -19,9 +19,20 @@ let DUMMY_USER = [
   }
 ];
 
-exports.getUserList = (req, res, next) => {
+exports.getUserList = async (req, res, next) => {
 
-  res.status(200).json({ users:DUMMY_USER });
+  let users;
+  try {
+    users = await User.find({}, "-password")
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching user failed, try again later.",
+      500
+    );
+
+    return next(error);
+  }
+  res.status(200).json(users.map(user => user.toObject({getters: true })));
 };
 
 exports.signup = async (req, res, next) => {
@@ -63,9 +74,8 @@ exports.signup = async (req, res, next) => {
     name,
     email,
     image: "https://picsum.photos/200",
-    // password,
     password: hash,
-    places: "test"
+    places: []
   });
 
   try {

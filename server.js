@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mogoose = require("mongoose");
+const morgan = require("morgan");
 
 const placesRoutes = require("./routes/places-routes");
 const userRoutes = require("./routes/users-routes");
@@ -12,6 +13,7 @@ const app = express();
 // this it will parse any incoming request body 
 // and extract json data an convert in normal JS
 
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use('/api/places',placesRoutes); /// => /api/places/...
 app.use('/api/user',userRoutes); /// => /api/places/...
