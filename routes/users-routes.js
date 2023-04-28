@@ -1,6 +1,7 @@
 const express = require("express");
 const { check } = require('express-validator');
 const router = express.Router();
+const fileUpload = require("../middleware/file-upload");
 
 const {
   getUserList,
@@ -9,7 +10,9 @@ const {
 } = require("../controllers/user-controller");
 
 router.get("/", getUserList);
-router.post("/signup", [
+router.post("/signup", 
+ fileUpload.single("image"),
+[
  check("email")
   .normalizeEmail()
   .isEmail(),

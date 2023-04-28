@@ -1,35 +1,9 @@
 const mongoose = require("mongoose");
-const {v4: uuidv4 } = require("uuid");
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 const getCoordsForAddress =require("../utils/location");
 const Place = require("../models/place");
 const User = require("../models/user");
-
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "One of the most famous sky scrapers in the world!",
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516
-    },
-    address: "20 W 34th St., New York, NY 10001, USA",
-    creator: "u1"
-  },
-  {
-    id: "p2",
-    title: "Eiffel Tower in Paris",
-    description: "Come and discover the Eiffel Tower on the only trip to the top of its kind in Europe, and let pure emotions carry you from the esplanade to the top.!",
-    location: {
-      lat: 48.8584,
-      lng: 2.2945
-    },
-    address: "Champ de Mars, 5 Av. Anatole France ",
-    creator: "u1"
-  }
-];
 
 exports.getAllPlaces = async (req, res, next) => {
   try {
@@ -81,6 +55,11 @@ exports.getPlacesByUserId = async (req, res, next) => {
     )); 
   };
 
+  if (places.length === 0) {
+    return next(new HttpError(
+      "Could not find a place with given id!"
+    ));
+  }
   res.json({ places: places.map(place => place.toObject({ getters: true }))});
 };
 
@@ -108,7 +87,7 @@ exports.createPlace = async (req, res, next) => {
     location: coordinates,
     image:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
-    creator
+    creator:creator
   });
 
   let user;
@@ -124,16 +103,14 @@ exports.createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(user);
-
   try {
-    await createdPlace.save();
-    // const sess = await mongoose.startSession();
-    // sess.startTransaction();
-    // await createdPlace.save({ session: sess });
-    // user.places.push(createdPlace);
-    // await user.save({ session: sess });
-    // await sess.commitTransaction();
+    // await createdPlace.save();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdPlace.save({ session: sess });
+    user.places.push(createdPlace);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       'Creating place failed, please try again.',
@@ -164,36 +141,39 @@ exports.updatePlace = async (req, res, next) => {
 };
 
 exports.deletePlace = async (req, res, next) => {
-  
-  const { pid } = req.params;
+  const placeId = req.params.pid;
 
   let place;
   try {
-    place = await Place.findById(pid).populate("creator")
-  
+    place = await Place.findById(placeId).populate('creator');
   } catch (err) {
-    
-    return next(new HttpError("Could not find the place", 404));
+    const error = new HttpError(
+      'Something went wrong, could not delete place.',
+      500
+    );
+    return next(error);
   }
 
   if (!place) {
+    const error = new HttpError('Could not find place for this id.', 404);
+    return next(error);
+  }
+  console.log(place, placeId, 'TESTING THE PLACE');
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await place.deleteOne({session: sess});
+    place.creator.places.pull(place);
+    await place.creator.save({session: sess});
+    await sess.commitTransaction();
+  } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete the place",
+      'Something went wrong, could not delete place.',
       500
     );
-    return next(error)
-  } else {
-      const sess = await mongoose.startSession();
-      sess.startTransaction();
-      await place.remove({ session: sess });
-      place.creator.places.pull(place);
-      await place.creator.save({ session: sess })
-      await sess.commitTransaction();
-    // user.places.push(createdPlace);
-    // await user.save({ session: sess });
-    // await sess.commitTransaction();
+    return next(error);
   }
-
-  res.status(200).json({message: "Place deleted."})
+  
+  res.status(200).json({ message: 'Deleted place.' });
 };
 

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mogoose = require("mongoose");
 const morgan = require("morgan");
+const cors = require('cors');
 
 const placesRoutes = require("./routes/places-routes");
 const userRoutes = require("./routes/users-routes");
@@ -15,6 +16,8 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
+
+app.use(cors());
 app.use('/api/places',placesRoutes); /// => /api/places/...
 app.use('/api/user',userRoutes); /// => /api/places/...
 
