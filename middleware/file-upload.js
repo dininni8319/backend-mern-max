@@ -1,5 +1,5 @@
 const multer = require("multer");
-const uuid =require("uuid/v1");
+const { v4 } = require('uuid');
 
 //tell us which type of file we are dealing with
 const MIME_TYPE_MAP = {
@@ -16,11 +16,12 @@ const fileUpload = multer({
     },
     filename: (req, file, cb) => {
       const ext = MIME_TYPE_MAP[file.mimetype] //get the extention 
-      cb(null, uuid() + "." + ext) //callback, generate the filename with extension
+      // cb(null, uuidv4 + "." + ext) //callback, generate the filename with extension
+      cb(null, v4() + "." + ext)
     }
   }),
   fileFilter: (req, file, cb) => {
-    // here we are checking is the mime type exsists
+    // here we are checking is if the mime type exists
     //and turning the mime into a boolean
    const isValid = !!MIME_TYPE_MAP[file.mimetype]; 
    let error = isValid ? null : new Error("invalid mime type!");
