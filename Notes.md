@@ -3,6 +3,7 @@ Packages
 #npm install --save-dev nodemon
 #npm install express-validator
 #npm install --save moongose
+#npm install --save jsonwebtoken
 #npm i bcrypt
 'npm install --save-dev' ---> adds the package into 
 the devDependencies

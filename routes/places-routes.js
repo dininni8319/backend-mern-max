@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require("express-validator");
-const fileUpload = require("../middleware/file-upload");
+const fileUpload = require("../middleware/file-upload"); //object with a banch of middleware
+
 const {
   getPlaceById,
   getAllPlaces, 

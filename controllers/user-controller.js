@@ -1,6 +1,8 @@
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+// const { encryptFun } = require("../utils/bcrypt");
 const User = require("../models/user");
 
 exports.getUserList = async (req, res, next) => {
@@ -50,16 +52,22 @@ exports.signup = async (req, res, next) => {
     return next(error);
   }
 
-  const saltRounds = 10;
-  const salt = bcrypt.genSaltSync(saltRounds);
-  // console.log(salt, password, "testing the password and the string");
-  const hash = bcrypt.hashSync(password, salt)
-
+  let hashPassword;
+  try {
+    // const hash = encryptFun(10, password);
+    hashPassword = await bcrypt.hash(password, 12);
+  } catch (err) {
+    const error = new HttpError(
+      "Could not create a user, please try again.",
+      500
+    );
+    return next(error);
+  }
   const newUser = new User({
     name,
     email,
     image: req.file.path,
-    password: hash,
+    password: hashPassword,
     places: []
   });
 
@@ -70,15 +78,35 @@ exports.signup = async (req, res, next) => {
       "Signing Up user failed, please try it again.",
       500
     );
-
     return next(error);
   }
   if (!newUser.name) {
     const error = new HttpError('User was not created.', 404);
     return next(error); 
   }
-   
-  res.status(201).json({user:newUser.toObject({ getters: true})})
+  
+  let token;
+  try {
+    console.log(newUser, 'TESTINGNEW');
+    token = jwt.sign(
+      { userId: newUser.id, email: newUser.email }, 
+     "supersecret_dont_share", 
+     { expiresIn: "1h" }
+    );
+  } catch (err) {
+    const error = new HttpError(
+      "Signing Up user failed, please try it again.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(201).json({
+    user: newUser.id,
+    email: newUser.email,
+    totken: token
+  });
+
   };
 
 exports.signin = async (req, res, next) => {
@@ -90,23 +118,30 @@ exports.signin = async (req, res, next) => {
     let data = bcrypt
       .compare(password, hash)
       .then(data => {
-        if (data) {
-          let response = { 
-            message: "correct password", 
-            user: emailExists.toObject({getters: true})
-          }
-          
-          return res.status(200).json(response); 
-        }
-        return res.status(401).json({message: "Invalid credentials, please try it again.", authenticated: data})
+        return data;
       })
     return data;
   };
+  let isValidPassword = await validatePassword(emailExists.password);
+  
+  if (emailExists && isValidPassword) {
+    token = jwt.sign(
+      { userId: emailExists.id, email: emailExists.email }, 
+      "supersecret_dont_share", 
+      { expiresIn: "1h" }
+    );
 
-  if (emailExists) {
-     await validatePassword(emailExists.password);
+    let response = { 
+      message: "Correct credentials", 
+      user: emailExists.name,
+      id: emailExists.id,
+      email: emailExists.email,
+      token: token,
+    }
+
+    return res.status(200).json(response); 
   } else {
-    const error = new HttpError('The credential are not correct.', 401);
+    const error = new HttpError('The credential are not correct.', 500);
     return next(error);
   }
 };
