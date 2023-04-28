@@ -23,6 +23,7 @@ exports.signup = async (req, res, next) => {
   const error = validationResult(req);
 
   if (!error.isEmpty()) {
+
     const error = new HttpError("Invalid data input, please check your data.", 422);
     return next(error); // use next instead of throw in an async task
   };
@@ -51,13 +52,13 @@ exports.signup = async (req, res, next) => {
 
   const saltRounds = 10;
   const salt = bcrypt.genSaltSync(saltRounds);
-  console.log(salt, password, "testing the password and the string");
+  // console.log(salt, password, "testing the password and the string");
   const hash = bcrypt.hashSync(password, salt)
 
   const newUser = new User({
     name,
     email,
-    image: "https://picsum.photos/200",
+    image: req.file.path,
     password: hash,
     places: []
   });
