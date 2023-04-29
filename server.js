@@ -48,7 +48,7 @@ mogoose
   .connect(process.env.DATABASE)
   .then(() => {
     console.log("Connected to the DB", 4000);
-    app.listen(4000);
+    app.listen(process.env.PORT || 4000);
   })
   .catch((err) => {
     console.log(err);

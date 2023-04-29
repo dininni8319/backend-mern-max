@@ -7,11 +7,15 @@
   <li>npm install express-validator</li>
   <li>npm install --save moongose</li>
   <li>npm install --save jsonwebtoken</li>
+  <li>npm install -g serve #Package for running static file localy, inside the build folder run <strong>serve</strong></li>
   <li>npm i bcrypt</li>
   <li>'npm install --save-dev' ---> adds the package into <li>
   <li>the devDependencies</li>
   <li>#npm install --save mongoose-unique-validator</li>
 </ul>
+
+<strong>Fire Base Docs for deployment</strong>
+https://firebase.google.com/docs/cli#windows-npm
 
 #To check with process are running on the port 5000
 lsof -i tcp:5000
@@ -51,12 +55,15 @@ Spoken languages: Italian, English, German.</p>
 I will share GitLab and Github accounts upon request.</p>
 <br/>
 <strong>More details...<strong>
+
 <b>LinkedIn Profile: <a href="https://www.linkedin.com/in/salvatoredininni/" >https://www.linkedin.com/in/salvatoredininni/ </a></b>
 
 <b>Portfolio Website: <a href="https://salvatore-dininni.com/" >https://salvatore-dininni.com</a></b> 
 
 <h3>My other projects:</h3>
 
+<strong>Domain on Firebase hosting</strong>
+https://places-bdf14.web.app
 <b>MERN Ecommerce App: <a href="http://ecommerce-mern.salvatore-dininni.com/" >http://ecommerce-mern.salvatore-dininni.com/</a></b> 
 
 <b>Game Streaming App: <a href="https://rehacktor.salvatore-dininni.com/" >https://rehacktor.salvatore-dininni.com/</a></b> 
