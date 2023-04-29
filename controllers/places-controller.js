@@ -65,13 +65,14 @@ exports.getPlacesByUserId = async (req, res, next) => {
 
 exports.createPlace = async (req, res, next) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return next(
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
   }
 
-  const { title, description, address, creator } = req.body;
+  const { title, description, address } = req.body;
 
   let coordinates;
   try {
@@ -80,13 +81,15 @@ exports.createPlace = async (req, res, next) => {
     return next(error);
   }
 
+  let creator = req.userData.userId;
+
   const createdPlace = new Place({
     title,
     description,
     address,
     location: coordinates,
     image: req.file.path,
-    creator:creator
+    creator: creator
   });
 
   let user;
@@ -176,7 +179,7 @@ exports.deletePlace = async (req, res, next) => {
   if (place.creator.id !== req.userData.userId) {
     const error = new HttpError(
       'You are not allowed to delete this place.',
-      401 //authoratization error
+      403 //authoratization error
     );
     return next(error);
   }

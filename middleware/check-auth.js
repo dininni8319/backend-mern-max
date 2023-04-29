@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 const HttpError = require("../models/http-error");
+require('dotenv').config();
+const JWT_KEY = process.env.JWT_KEY;
 
 module.exports = (req, res, next) => {
-  // console.log(req.method, "METHOD");
   if (req.method === "OPTIONS") {
     return next();
   }
@@ -13,12 +14,12 @@ module.exports = (req, res, next) => {
       throw new Error("Authorization failed!");
     } 
 
-    const decodedToken = jwt.verify(token,"supersecret_dont_share")
+    const decodedToken = jwt.verify(token, JWT_KEY)
     req.userData = { userId: decodedToken.userId }
     next();
   } catch (err) {
     const error = new HttpError(
-      "Authentication failed", 401
+      "Authentication failed", 403 //forbidden
     );
     return next(error);
   }

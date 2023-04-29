@@ -4,12 +4,14 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 // const { encryptFun } = require("../utils/bcrypt");
 const User = require("../models/user");
+require('dotenv').config();
+const JWT_KEY = process.env.JWT_KEY;
 
 exports.getUserList = async (req, res, next) => {
 
   let users;
   try {
-    users = await User.find({}, "-password")
+    users = await User.find({}, "-password") // exclude the password
   } catch (err) {
     const error = new HttpError(
       "Fetching user failed, try again later.",
@@ -90,7 +92,7 @@ exports.signup = async (req, res, next) => {
     console.log(newUser, 'TESTINGNEW');
     token = jwt.sign(
       { userId: newUser.id, email: newUser.email }, 
-     "supersecret_dont_share", 
+      JWT_KEY, 
      { expiresIn: "1h" }
     );
   } catch (err) {
@@ -128,7 +130,7 @@ exports.signin = async (req, res, next) => {
   if (emailExists && isValidPassword) {
     token = jwt.sign(
       { userId: emailExists.id, email: emailExists.email }, 
-      "supersecret_dont_share", 
+      JWT_KEY, 
       { expiresIn: "1h" }
     );
 

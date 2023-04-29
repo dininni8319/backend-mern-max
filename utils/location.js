@@ -1,6 +1,7 @@
 const axios = require("axios");
 const HttpError = require("../models/http-error");
-const API_KEY = "AIzaSyCyoOWrYRMJ9tfarx8cf07YYOtl-fdGXG4";
+require('dotenv').config();
+const API_KEY = process.env.GOOGLE_LOCATION_API_KEY;
 
 async function getCoordsForAddress(address) {
   
@@ -13,10 +14,8 @@ async function getCoordsForAddress(address) {
 
     throw error;
   }
-  
   const coordinates = data.results[0].geometry.location;
 
-  console.log("COORDINATES", coordinates);
   return coordinates;
 }
 
