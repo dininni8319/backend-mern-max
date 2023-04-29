@@ -36,13 +36,13 @@ kill $(lsof -t -i:3000)
 
 <h3>My other projects:</h3>
 
-<b>MERN Ecommerce App<a href="http://ecommerce-mern.salvatore-dininni.com/" >http://ecommerce-mern.salvatore-dininni.com/</a></b> 
+<b>MERN Ecommerce App: <a href="http://ecommerce-mern.salvatore-dininni.com/" >http://ecommerce-mern.salvatore-dininni.com/</a></b> 
 
-<b>Game Streaming App<a href="https://rehacktor.salvatore-dininni.com/" >https://rehacktor.salvatore-dininni.com/</a></b> 
+<b>Game Streaming App: <a href="https://rehacktor.salvatore-dininni.com/" >https://rehacktor.salvatore-dininni.com/</a></b> 
 
-<b>Search bar<a href="http://github-search.salvatore-dininni.com">http://github-search.salvatore-dininni.com</a></b>
+<b>Search Bar: <a href="http://github-search.salvatore-dininni.com">http://github-search.salvatore-dininni.com</a></b>
 
-<b>Task App, React and Laravel Stack<a href="https://task.salvatore-dininni.com">https://task.salvatore-dininni.com</a></b>
+<b>Task App, React and Laravel Stack: <a href="https://task.salvatore-dininni.com">https://task.salvatore-dininni.com</a></b>
 
-<b>Ricorsi App, React and Laravel Stack<a href="https://ricorsi.salvatore-dininni.com">https://task.salvatore-dininni.com</a></b>
+<b>Ricorsi App, React and Laravel Stack: <a href="https://ricorsi.salvatore-dininni.com">https://task.salvatore-dininni.com</a></b>
 
