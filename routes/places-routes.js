@@ -1,7 +1,7 @@
 const express = require('express');
 const { check } = require("express-validator");
 const fileUpload = require("../middleware/file-upload"); //object with a banch of middleware
-
+const checkAuth = require("../middleware/check-auth");
 const {
   getPlaceById,
   getAllPlaces, 
@@ -16,6 +16,7 @@ const router = express.Router();
 router.get("/", getAllPlaces)
 router.get('/:pid', getPlaceById);
 router.get('/user/:uid', getPlacesByUserId);
+router.use(checkAuth);
 router.post(
    "/",
    fileUpload.single("image"),

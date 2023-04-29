@@ -71,7 +71,7 @@ exports.createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, address, creator, } = req.body;
+  const { title, description, address, creator } = req.body;
 
   let coordinates;
   try {
@@ -129,14 +129,22 @@ exports.updatePlace = async (req, res, next) => {
   
   const { pid } = req.params; 
   let place;
+  
   try {
     place = await Place.findByIdAndUpdate({ _id: pid }, req.body, { new: true })
     .exec()
+    if (place?.creator !== req.userData.userId) {
+      const error = new HttpError(
+        'You are not allowed to edit this place.',
+        401 //authoratization error
+      );
+      return next(error);
+    }
   } catch (error) {
     throw new HttpError("Issue with updating.", 422);
   }
 
-  res.status(200).json({place: place.toObject({ getters: true })});
+  res.status(200).json({place: place?.toObject({ getters: true })});
 };
 
 exports.deletePlace = async (req, res, next) => {

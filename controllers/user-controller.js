@@ -102,9 +102,10 @@ exports.signup = async (req, res, next) => {
   }
 
   res.status(201).json({
-    user: newUser.id,
+    id: newUser.id,
+    user: newUser.name,
     email: newUser.email,
-    totken: token
+    token: token
   });
 
   };
