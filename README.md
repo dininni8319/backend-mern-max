@@ -44,5 +44,6 @@ kill $(lsof -t -i:3000)
 
 <b>Task App, React and Laravel Stack: <a href="https://task.salvatore-dininni.com">https://task.salvatore-dininni.com</a></b>
 
-<b>Ricorsi App, React and Laravel Stack: <a href="https://ricorsi.salvatore-dininni.com">https://task.salvatore-dininni.com</a></b>
+<b>Ricorsi App, React and Laravel Stack: <a href="https://ricorsi.salvatore-dininni.com">https://ricorsi.salvatore-dininni.com</a></b>
 
+<b>Search Console, React and Laravel Stack: <a href="https://search-console.salvatore-dininni.com">https://search-console.salvatore-dininni.com</a></b>
