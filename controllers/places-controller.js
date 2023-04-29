@@ -126,24 +126,29 @@ exports.updatePlace = async (req, res, next) => {
   if (!error.isEmpty()) {
     throw new HttpError("Invalid input passed, please check your data.", 422);
   };
-  
+
+  const { title, description } = req.body;
   const { pid } = req.params; 
-  let place;
   
+  let place;
   try {
-    place = await Place.findByIdAndUpdate({ _id: pid }, req.body, { new: true })
-    .exec()
-    if (place?.creator !== req.userData.userId) {
-      const error = new HttpError(
-        'You are not allowed to edit this place.',
-        401 //authoratization error
-      );
-      return next(error);
-    }
+    place = await Place.findOne({_id: pid});
   } catch (error) {
     throw new HttpError("Issue with updating.", 422);
   }
+  
+  if (place?.creator.toString() !== req.userData.userId) {
+    const error = new HttpError(
+      'You are not allowed to edit this place.',
+      401 //authoratization error
+    );
+    return next(error);
+  }
 
+  place.title = title;
+  place.description = description;
+
+  place.save();
   res.status(200).json({place: place?.toObject({ getters: true })});
 };
 
@@ -152,7 +157,7 @@ exports.deletePlace = async (req, res, next) => {
 
   let place;
   try {
-    place = await Place.findById(placeId).populate('creator');
+    place = await Place.findById(placeId).populate('creator').exec();
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not delete place.',
@@ -167,8 +172,14 @@ exports.deletePlace = async (req, res, next) => {
   }
 
   const image = place.image;
-  console.log(image,'IMAGE');
- 
+  
+  if (place.creator.id !== req.userData.userId) {
+    const error = new HttpError(
+      'You are not allowed to delete this place.',
+      401 //authoratization error
+    );
+    return next(error);
+  }
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
